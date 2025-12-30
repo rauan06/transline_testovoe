@@ -13,6 +13,7 @@ import (
 
 	pb "testovoe/api/proto"
 	"testovoe/internal/customer/service"
+
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -42,7 +43,6 @@ func (s *Server) UpsertCustomer(ctx context.Context, req *pb.UpsertCustomerReque
 		return nil, status.Errorf(codes.Internal, "failed to upsert customer: %v", err)
 	}
 
-	// Логирование с trace_id
 	if spanCtx := span.SpanContext(); spanCtx.IsValid() {
 		traceID := spanCtx.TraceID().String()
 		log.Printf("Upserted customer %s (idn: %s), trace_id: %s", c.ID, c.IDN, traceID)
@@ -73,7 +73,6 @@ func (s *Server) GetCustomer(ctx context.Context, req *pb.GetCustomerRequest) (*
 		return nil, status.Errorf(codes.Internal, "failed to get customer: %v", err)
 	}
 
-	// Логирование с trace_id
 	if spanCtx := span.SpanContext(); spanCtx.IsValid() {
 		traceID := spanCtx.TraceID().String()
 		log.Printf("Retrieved customer %s (idn: %s), trace_id: %s", c.ID, c.IDN, traceID)
@@ -101,4 +100,3 @@ func StartGRPCServer(port string, svc *service.Service) error {
 	log.Printf("Customer gRPC server listening on :%s", port)
 	return s.Serve(lis)
 }
-

@@ -6,6 +6,7 @@ import (
 
 	"testovoe/internal/shipment/grpc"
 	"testovoe/internal/shipment/repo"
+
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 )
@@ -40,13 +41,11 @@ func (s *Service) CreateShipment(ctx context.Context, req CreateShipmentRequest)
 		attribute.String("customer.idn", req.Customer.IDN),
 	)
 
-	// Валидация IDN (12 цифр)
 	if len(req.Customer.IDN) != 12 {
 		span.RecordError(fmt.Errorf("invalid idn length"))
 		return nil, fmt.Errorf("idn must be exactly 12 digits")
 	}
 
-	// Вызов customer-service через gRPC
 	customerResp, err := s.customerGrpc.UpsertCustomer(ctx, req.Customer.IDN)
 	if err != nil {
 		span.RecordError(err)
@@ -55,7 +54,6 @@ func (s *Service) CreateShipment(ctx context.Context, req CreateShipmentRequest)
 
 	span.SetAttributes(attribute.String("customer.id", customerResp.Id))
 
-	// Создание shipment
 	shipment := &repo.Shipment{
 		Route:      req.Route,
 		Price:      req.Price,
@@ -85,4 +83,3 @@ func (s *Service) GetShipment(ctx context.Context, id string) (*repo.Shipment, e
 
 	return shipment, nil
 }
-

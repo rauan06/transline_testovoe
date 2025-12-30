@@ -30,12 +30,12 @@ type CreateShipmentRequest struct {
 }
 
 type ShipmentResponse struct {
-	ID        string    `json:"id"`
-	Route     string    `json:"route"`
-	Price     float64   `json:"price"`
-	Status    string    `json:"status"`
-	CustomerID string   `json:"customerId"`
-	CreatedAt time.Time `json:"created_at"`
+	ID         string    `json:"id"`
+	Route      string    `json:"route"`
+	Price      float64   `json:"price"`
+	Status     string    `json:"status"`
+	CustomerID string    `json:"customerId"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 func (h *Handler) CreateShipment(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +77,6 @@ func (h *Handler) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 
-	// Логирование с trace_id
 	if spanCtx := span.SpanContext(); spanCtx.IsValid() {
 		traceID := spanCtx.TraceID().String()
 		log.Printf("Created shipment %s, trace_id: %s", shipment.ID, traceID)
@@ -120,10 +119,8 @@ func (h *Handler) GetShipment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 
-	// Логирование с trace_id
 	if spanCtx := span.SpanContext(); spanCtx.IsValid() {
 		traceID := spanCtx.TraceID().String()
 		log.Printf("Retrieved shipment %s, trace_id: %s", shipment.ID, traceID)
 	}
 }
-

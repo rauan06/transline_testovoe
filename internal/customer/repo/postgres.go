@@ -35,7 +35,6 @@ func (r *Repository) UpsertCustomer(ctx context.Context, idn string) (*Customer,
 		attribute.String("customer.idn", idn),
 	)
 
-	// Сначала пытаемся найти существующего клиента
 	var customer Customer
 	query := `SELECT id, idn, created_at FROM customers WHERE idn = $1`
 	err := r.db.QueryRowContext(ctx, query, idn).Scan(
@@ -54,7 +53,6 @@ func (r *Repository) UpsertCustomer(ctx context.Context, idn string) (*Customer,
 		return nil, fmt.Errorf("failed to query customer: %w", err)
 	}
 
-	// Если не найден, создаём нового
 	span.SetAttributes(attribute.String("db.result", "created"))
 	customer.ID = uuid.New().String()
 	customer.IDN = idn
@@ -63,7 +61,7 @@ func (r *Repository) UpsertCustomer(ctx context.Context, idn string) (*Customer,
 	insertQuery := `INSERT INTO customers (id, idn, created_at) VALUES ($1, $2, $3) 
 		ON CONFLICT (idn) DO UPDATE SET idn = EXCLUDED.idn 
 		RETURNING id, idn, created_at`
-	
+
 	err = r.db.QueryRowContext(ctx, insertQuery, customer.ID, customer.IDN, customer.CreatedAt).Scan(
 		&customer.ID,
 		&customer.IDN,
@@ -137,4 +135,3 @@ func (r *Repository) GetCustomerByID(ctx context.Context, id string) (*Customer,
 	span.SetAttributes(attribute.String("db.result", "found"))
 	return &customer, nil
 }
-

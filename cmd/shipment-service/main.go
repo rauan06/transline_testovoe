@@ -34,7 +34,6 @@ func initTracer() func() {
 	if otelEndpoint == "" {
 		otelEndpoint = "localhost:4317"
 	} else {
-		// Убираем http:// префикс если есть
 		otelEndpoint = strings.TrimPrefix(otelEndpoint, "http://")
 		otelEndpoint = strings.TrimPrefix(otelEndpoint, "https://")
 	}
@@ -80,11 +79,9 @@ func initTracer() func() {
 }
 
 func main() {
-	// Инициализация OpenTelemetry
 	shutdown := initTracer()
 	defer shutdown()
 
-	// Подключение к БД
 	dbHost := os.Getenv("DB_HOST")
 	if dbHost == "" {
 		dbHost = "localhost"
@@ -121,7 +118,6 @@ func main() {
 
 	log.Println("Connected to database")
 
-	// Подключение к customer-service через Envoy
 	grpcEndpoint := os.Getenv("GRPC_ENVOY_ENDPOINT")
 	if grpcEndpoint == "" {
 		grpcEndpoint = "localhost:9090"
@@ -135,12 +131,10 @@ func main() {
 
 	log.Printf("Connected to customer service via Envoy at %s", grpcEndpoint)
 
-	// Инициализация слоёв
 	repo := repo.NewRepository(db)
 	svc := service.NewService(repo, customerGrpc)
 	handler := httphandler.NewHandler(svc)
 
-	// Настройка HTTP роутера
 	router := mux.NewRouter()
 	router.Use(otelmux.Middleware("shipment-service"))
 
@@ -148,7 +142,6 @@ func main() {
 	api.HandleFunc("/shipments", handler.CreateShipment).Methods("POST")
 	api.HandleFunc("/shipments/{id}", handler.GetShipment).Methods("GET")
 
-	// Запуск HTTP сервера
 	httpPort := os.Getenv("HTTP_PORT")
 	if httpPort == "" {
 		httpPort = "8080"

@@ -30,7 +30,6 @@ func initTracer() func() {
 	if otelEndpoint == "" {
 		otelEndpoint = "localhost:4317"
 	} else {
-		// Убираем http:// префикс если есть
 		otelEndpoint = strings.TrimPrefix(otelEndpoint, "http://")
 		otelEndpoint = strings.TrimPrefix(otelEndpoint, "https://")
 	}
@@ -76,11 +75,9 @@ func initTracer() func() {
 }
 
 func main() {
-	// Инициализация OpenTelemetry
 	shutdown := initTracer()
 	defer shutdown()
 
-	// Подключение к БД
 	dbHost := os.Getenv("DB_HOST")
 	if dbHost == "" {
 		dbHost = "localhost"
@@ -117,11 +114,9 @@ func main() {
 
 	log.Println("Connected to database")
 
-	// Инициализация слоёв
 	repo := repo.NewRepository(db)
 	svc := service.NewService(repo)
 
-	// Запуск gRPC сервера
 	grpcPort := os.Getenv("GRPC_PORT")
 	if grpcPort == "" {
 		grpcPort = "9090"
@@ -140,4 +135,3 @@ func main() {
 
 	log.Println("Shutting down...")
 }
-
