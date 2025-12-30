@@ -43,19 +43,15 @@ services:
     volumes:
       - ./config/otel-collector.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
+      - "4317:4317"
+      - "4318:4318"
     depends_on:
       jaeger:
         condition: service_healthy
-    healthcheck:
-      # Простая проверка доступности порта через TCP
-      test: ["CMD", "/otelcol", "--help"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     restart: unless-stopped
+    networks:
+      - internal
+
 
   customer-service:
     build:

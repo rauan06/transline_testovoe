@@ -4,20 +4,11 @@
 *.dll
 *.so
 *.dylib
-customer-service
-shipment-service
 
-# Test binary
 *.test
 
-# Output of the go coverage tool
 *.out
 
-# Dependency directories
-vendor/
-
-# Go workspace file
-go.work
 
 # Generated proto files
 api/proto/*.pb.go
