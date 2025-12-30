@@ -200,6 +200,7 @@ buf generate
 ### Отладка
 
 ```bash
+# ! Все сервисы включают в себя Graceful Shutdown
 # Просмотр логов конкретного сервиса
 make docker-logs-customer
 make docker-logs-shipment
