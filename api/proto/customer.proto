@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package customer;
+
+option go_package = "testovoe/api/proto";
+
+service CustomerService {
+  rpc UpsertCustomer (UpsertCustomerRequest) returns (CustomerResponse);
+  rpc GetCustomer    (GetCustomerRequest)    returns (CustomerResponse);
+}
+
+message UpsertCustomerRequest {
+  string idn = 1;
+}
+
+message GetCustomerRequest {
+  string idn = 1;
+}
+
+message CustomerResponse {
+  string id = 1;
+  string idn = 2;
+  string created_at = 3;
+}
+

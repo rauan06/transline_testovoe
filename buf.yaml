@@ -1,0 +1,13 @@
+version: v2
+modules:
+  - path: api/proto
+    name: testovoe/api/proto
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - STANDARD
+  except:
+    - PACKAGE_VERSION_SUFFIX
+    - PACKAGE_DIRECTORY_MATCH
